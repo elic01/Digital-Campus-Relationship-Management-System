@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Digital Student Review and Relationship Management System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="assets/css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <h2 style="text-align: center; margin-bottom: 30px;">Sign Up</h2>
+            
+            <form id="signupForm" onsubmit="handleSignup(event)">
+                <div class="input-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" class="input-field" required>
+                    <div class="error-message" id="nameError"></div>
+                </div>
+
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" class="input-field" required>
+                    <div class="error-message" id="emailError"></div>
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="input-field" required>
+                    <div class="password-strength">
+                        <div class="strength-meter"></div>
+                    </div>
+                    <div class="error-message" id="passwordError"></div>
+                </div>
+
+                <div class="input-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" class="input-field" required>
+                    <div class="error-message" id="confirmPasswordError"></div>
+                </div>
+
+                <div class="input-group">
+                    <label for="role">Role</label>
+                    <select id="role" class="input-field" required>
+                        <option value="">Select Role</option>
+                        <option value="student">Student</option>
+                        <option value="teacher">Teacher</option>
+                        <option value="admin">Administrator</option>
+                    </select>
+                    <div class="error-message" id="roleError"></div>
+                </div>
+
+                <button type="submit" class="btn">Create Account</button>
+                
+                <p style="text-align: center; margin-top: 20px;">
+                    Already have an account? 
+                    <a href="index.html" style="color: var(--primary-light); text-decoration: none;">Login</a>
+                </p>
+
+                <div class="loader" id="loader"></div>
+                <div class="success-message" id="successMessage"></div>
+                <div class="error-message" id="generalError"></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Theme Toggle
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.querySelector('.theme-toggle i');
+            icon.classList.toggle('fa-moon');
+            icon.classList.toggle('fa-sun');
+        }
+
+        // Password Strength Meter
+        const passwordInput = document.getElementById('password');
+        const strengthMeter = document.querySelector('.strength-meter');
+
+        passwordInput.addEventListener('input', updateStrengthMeter);
+
+        function updateStrengthMeter() {
+            const password = passwordInput.value;
+            const strength = calculatePasswordStrength(password);
+            
+            strengthMeter.className = 'strength-meter';
+            if (strength > 80) strengthMeter.classList.add('strong');
+            else if (strength > 50) strengthMeter.classList.add('medium');
+            else if (strength > 0) strengthMeter.classList.add('weak');
+        }
+
+        function calculatePasswordStrength(password) {
+            let strength = 0;
+            if (password.length >= 8) strength += 20;
+            if (password.match(/[a-z]+/)) strength += 20;
+            if (password.match(/[A-Z]+/)) strength += 20;
+            if (password.match(/[0-9]+/)) strength += 20;
+            if (password.match(/[$@#&!]+/)) strength += 20;
+            return strength;
+        }
+
+        // Signup Handler
+        async function handleSignup(event) {
+            event.preventDefault();
+            
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const role = document.getElementById('role').value;
+            const loader = document.getElementById('loader');
+            
+            // Reset error messages
+            document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+            document.getElementById('successMessage').style.display = 'none';
+            
+            try {
+                loader.style.display = 'block';
+
+                // Validate input
+                if (fullName.length < 2) {
+                    throw new Error('Name must be at least 2 characters long');
+                }
+
+                if (!validateEmail(email)) {
+                    throw new Error('Invalid email format');
+                }
+
+                if (!validatePassword(password)) {
+                    throw new Error('Password must be at least 8 characters long');
+                }
+
+                if (password !== confirmPassword) {
+                    throw new Error('Passwords do not match');
+                }
+
+                if (!role) {
+                    throw new Error('Please select a role');
+                }
+
+                // API call would go here
+                await simulateApiCall({ fullName, email, password, role });
+
+                document.getElementById('successMessage').textContent = 'Account created successfully';
+                document.getElementById('successMessage').style.display = 'block';
+                
+                // Redirect to login after successful signup
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+
+            } catch (error) {
+                document.getElementById('generalError').textContent = error.message;
+                document.getElementById('generalError').style.display = 'block';
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+
+        // Validation Functions
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function validatePassword(password) {
+            return password.length >= 8;
+        }
+
+        // Simulate API Call
+        function simulateApiCall(data) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    if (Math.random() > 0.5) {
+                        resolve({ success: true });
+                    } else {
+                        reject(new Error('Error creating account. Please try again.'));
+                    }
+                }, 1500);
+            });
+        }
+    </script>
+</body>
+</html>
