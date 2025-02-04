@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DCRMS - Authentication</title>
+    <link rel="stylesheet" href="../styles/auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-box">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="showForm('login')">Login</button>
+                <button class="tab-btn" onclick="showForm('signup')">Sign Up</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="auth-form">
+                <h2>Welcome Back</h2>
+                <div class="role-selector">
+                    <select name="role" required>
+                        <option value="">Select Role</option>
+                        <option value="student">Student</option>
+                        <option value="lecturer">Lecturer</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <input type="email" placeholder="Email" required>
+                <input type="password" placeholder="Password" required>
+                <button type="submit" class="primary-btn">Login</button>
+                
+                <div class="social-login">
+                    <button type="button" class="google-btn">
+                        <i class="fab fa-google"></i> Login with Google
+                    </button>
+                    <button type="button" class="university-btn">
+                        <i class="fas fa-university"></i> University Login
+                    </button>
+                </div>
+                
+                <a href="reset-password.html" class="forgot-password">Forgot Password?</a>
+            </form>
+              <!-- Sign Up Form -->
+              <form id="signup-form" class="auth-form hidden">
+                  <h2>Create Account</h2>
+                  <div class="role-selector">
+                      <select name="role" required>
+                          <option value="">Select Role</option>
+                          <option value="student">Student</option>
+                          <option value="lecturer">Lecturer</option>
+                      </select>
+                  </div>
+                  <input type="text" name="fullName" placeholder="Full Name" required>
+                  <input type="email" name="email" placeholder="Email" required>
+                  <input type="password" name="password" placeholder="Password" required>
+                  <input type="password" name="confirmPassword" placeholder="Confirm Password" required>
+                  <button type="submit" class="primary-btn">Sign Up</button>
+              </form>
+          </div>
+    </div>
+</body>
+</html>
