@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniConnect Admin Dashboard</title>
+    
+    <!-- Keeping consistent libraries -->
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
+    
+    <!-- Add Particles.js -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    
+    <style>
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .glassmorphic {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            border-right: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        .nav-link {
+            padding: 12px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(10px);
+        }
+
+        .nav-link.active {
+            background: rgba(79, 70, 229, 0.2);
+            border-left: 4px solid #4f46e5;
+        }
+
+        .dashboard-card {
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.45);
+        }
+
+        .task-card {
+            cursor: grab;
+            transition: all 0.3s ease;
+        }
+
+        .task-card:hover {
+            transform: scale(1.02);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .task-card.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+
+        .action-button {
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            background: rgba(79, 70, 229, 0.2);
+        }
+
+        .action-button:hover {
+            background: rgba(79, 70, 229, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+        }
+
+        .search-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 8px 16px;
+            backdrop-filter: blur(5px);
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: rgba(79, 70, 229, 0.5);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div id="particles-js"></div>
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="sidebar w-64 p-6 space-y-6">
+            <div class="text-2xl font-bold mb-8">UniConnect Admin</div>
+            <nav class="space-y-4">
+                <a href="#" class="nav-link flex items-center space-x-3">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="#" class="nav-link flex items-center space-x-3">
+                    <i class="fas fa-tasks"></i>
+                    <span>Issue Tracking</span>
+                </a>
+                <a href="#" class="nav-link flex items-center space-x-3">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Task Manager</span>
+                </a>
+                <a href="#" class="nav-link flex items-center space-x-3">
+                    <i class="fas fa-users"></i>
+                    <span>User Management</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 p-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Analytics Cards -->
+                <div class="dashboard-card p-6">
+                    <h3 class="text-xl font-bold mb-4">Total Users</h3>
+                    <div class="text-4xl font-bold">2,547</div>
+                    <canvas id="usersChart" class="mt-4"></canvas>
+                </div>
+                
+                <div class="dashboard-card p-6">
+                    <h3 class="text-xl font-bold mb-4">Active Issues</h3>
+                    <div class="text-4xl font-bold">184</div>
+                    <canvas id="issuesChart" class="mt-4"></canvas>
+                </div>
+
+                <div class="dashboard-card p-6">
+                    <h3 class="text-xl font-bold mb-4">Feedback Score</h3>
+                    <div class="text-4xl font-bold">4.8/5</div>
+                    <canvas id="feedbackChart" class="mt-4"></canvas>
+                </div>
+            </div>
+
+            <!-- Issue Tracking Board -->
+            <div class="dashboard-card p-6 mb-8">
+                <h2 class="text-2xl font-bold mb-6">Issue Tracking</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="kanban-column p-4">
+                        <h3 class="font-bold mb-4">Open</h3>
+                        <div class="task-card">Network connectivity issues in Lab 3</div>
+                        <div class="task-card">Update student portal UI</div>
+                    </div>
+                    <div class="kanban-column p-4">
+                        <h3 class="font-bold mb-4">In Progress</h3>
+                        <div class="task-card">Implement new feedback system</div>
+                    </div>
+                    <div class="kanban-column p-4">
+                        <h3 class="font-bold mb-4">Completed</h3>
+                        <div class="task-card">Server maintenance</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Management -->
+            <div class="dashboard-card p-6">
+                <h2 class="text-2xl font-bold mb-6">Recent Users</h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr>
+                                <th class="text-left p-3">Name</th>
+                                <th class="text-left p-3">Role</th>
+                                <th class="text-left p-3">Status</th>
+                                <th class="text-left p-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="p-3">John Doe</td>
+                                <td class="p-3">Student</td>
+                                <td class="p-3"><span class="px-2 py-1 bg-green-500 text-white rounded-full text-sm">Active</span></td>
+                                <td class="p-3">
+                                    <button class="text-blue-500 hover:text-blue-700"><i class="fas fa-edit"></i></button>
+                                    <button class="text-red-500 hover:text-red-700 ml-2"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Particles.js
+        particlesJS("particles-js", {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: "#4f46e5" },
+                shape: { type: "circle" },
+                opacity: {
+                    value: 0.5,
+                    random: false,
+                    animation: { enable: true, speed: 1, opacity_min: 0.1, sync: false }
+                },
+                size: {
+                    value: 3,
+                    random: true,
+                    animation: { enable: true, speed: 40, size_min: 0.1, sync: false }
+                },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: "#4f46e5",
+                    opacity: 0.4,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 6,
+                    direction: "none",
+                    random: false,
+                    straight: false,
+                    out_mode: "out",
+                    bounce: false,
+                }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: {
+                    onhover: { enable: true, mode: "repulse" },
+                    onclick: { enable: true, mode: "push" },
+                    resize: true
+                }
+            },
+            retina_detect: true
+        });
+
+        // Enhanced Dashboard Functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            // Navigation Active State
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    e.currentTarget.classList.add('active');
+                });
+            });
+
+            // Kanban Board Drag & Drop
+            const draggables = document.querySelectorAll('.task-card');
+            const containers = document.querySelectorAll('.kanban-column');
+
+            draggables.forEach(draggable => {
+                draggable.setAttribute('draggable', true);
+                
+                draggable.addEventListener('dragstart', () => {
+                    draggable.classList.add('dragging');
+                });
+
+                draggable.addEventListener('dragend', () => {
+                    draggable.classList.remove('dragging');
+                    updateTaskCount();
+                });
+            });
+
+            containers.forEach(container => {
+                container.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    const draggable = document.querySelector('.dragging');
+                    container.appendChild(draggable);
+                });
+            });
+
+            // Real-time Search
+            const searchBar = document.querySelector('.search-bar');
+            searchBar.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const taskCards = document.querySelectorAll('.task-card');
+                
+                taskCards.forEach(card => {
+                    const text = card.textContent.toLowerCase();
+                    card.style.display = text.includes(searchTerm) ? 'block' : 'none';
+                });
+            });
+
+            // Update Task Counts
+            function updateTaskCount() {
+                const columns = document.querySelectorAll('.kanban-column');
+                columns.forEach(column => {
+                    const count = column.querySelectorAll('.task-card').length;
+                    const title = column.querySelector('h3');
+                    title.textContent = `${title.textContent.split('(')[0]} (${count})`;
+                });
+            }
+
+            // Initialize Charts with Animation
+            initializeCharts();
+        });
+
+        function initializeCharts() {
+            // Initialize Charts
+            const ctx = document.getElementById('usersChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                    datasets: [{
+                        label: 'User Growth',
+                        data: [1500, 1700, 1900, 2200, 2547],
+                        borderColor: '#4f46e5',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
