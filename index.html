@@ -3,189 +3,259 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Student Review and Relationship Management System</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="assets/css/styles.css" rel="stylesheet">
+    <title>UniConnect - Student Review & Relationship Management System</title>
+    
+    <!-- Libraries -->
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
+
+    <style>
+        :root {
+            --primary-light: #4f46e5;
+            --primary-dark: #3730a3;
+            --bg-light: #f3f4f6;
+            --bg-dark: #1f2937;
+            --text-light: #374151;
+            --text-dark: #f3f4f6;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.45);
+        }
+
+        .neu-button {
+            padding: 12px 24px;
+            border-radius: 10px;
+            background: var(--bg-light);
+            box-shadow: 5px 5px 10px #d1d1d1, -5px -5px 10px #ffffff;
+            transition: all 0.3s;
+        }
+
+        .dark-mode .neu-button {
+            background: var(--bg-dark);
+            box-shadow: 5px 5px 10px #131720, -5px -5px 10px #2b3b4e;
+        }
+
+        .neu-button:hover {
+            transform: scale(1.05);
+        }
+
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .animated-bg::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, #4f46e5, #3730a3, #4f46e5);
+            animation: gradient 15s ease infinite;
+            opacity: 0.1;
+        }
+
+        @keyframes gradient {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-light);
+        }
+
+        .testimonial-card {
+            position: relative;
+            padding: 2rem;
+            margin: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+        }
+
+        .nav-link {
+            position: relative;
+            padding: 0.5rem 1rem;
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-light);
+            transition: width 0.3s;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
-    <button class="theme-toggle" onclick="toggleTheme()">
-        <i class="fas fa-moon"></i>
-    </button>
+    <div class="animated-bg"></div>
 
-    <div class="auth-container">
-        <div class="auth-card">
-            <h2 style="text-align: center; margin-bottom: 30px;">Login</h2>
-            
-            <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="input-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" class="input-field" required>
-                    <div class="error-message" id="emailError"></div>
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass-card">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="text-2xl font-bold">UniConnect</div>
+                <div class="hidden md:flex space-x-6">
+                    <a href="#" class="nav-link">Home</a>
+                    <a href="#" class="nav-link">Features</a>
+                    <a href="#" class="nav-link">About</a>
+                    <a href="#" class="nav-link">Contact</a>
                 </div>
-
-                <div class="input-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" class="input-field" required>
-                    <div class="password-strength">
-                        <div class="strength-meter"></div>
-                    </div>
-                    <div class="error-message" id="passwordError"></div>
+                <div class="flex items-center space-x-4">
+                    <button id="darkModeToggle" class="neu-button">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="neu-button bg-indigo-600 text-white">
+                        Get Started
+                    </button>
                 </div>
-                              <button type="submit" class="btn">Login</button>
-                
-                              <button type="button" class="biometric-btn" onclick="handleBiometric()">
-                                  <i class="fas fa-fingerprint"></i>
-                              </button>
-
-                              <div class="loader" id="loader"></div>
-                              <div class="success-message" id="successMessage"></div>
-                              <div class="error-message" id="generalError"></div>
-
-                              <!-- Add this after the login button in the form -->
-                              <p style="text-align: center; margin-top: 20px;">
-                                  New user? 
-                                  <a href="signup.html" style="color: var(--primary-light); text-decoration: none; font-weight: 600;">Create Account</a>
-                              </p>
-                          </form>
+            </div>
         </div>
-    </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2">
+                    <h1 class="text-5xl font-bold mb-6">
+                        Empowering Students, Enhancing Campus Life
+                    </h1>
+                    <p class="text-xl mb-8">
+                        Connect, Review, and Improve your university experience with UniConnect's comprehensive feedback system.
+                    </p>
+                    <button class="neu-button bg-indigo-600 text-white">
+                        Join Now
+                    </button>
+                </div>
+                <div class="md:w-1/2 mt-10 md:mt-0">
+                    <img src="https://picsum.photos/800/600?random=1" alt="Hero Image" class="rounded-lg shadow-xl">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-20">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-16">Key Features</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="glass-card p-8 text-center">
+                    <i class="fas fa-comments feature-icon"></i>
+                    <h3 class="text-xl font-bold mb-4">Lecture Reviews</h3>
+                    <p>Provide meaningful feedback on lectures and track improvements over time.</p>
+                </div>
+                <div class="glass-card p-8 text-center">
+                    <i class="fas fa-tasks feature-icon"></i>
+                    <h3 class="text-xl font-bold mb-4">Task Management</h3>
+                    <p>Stay organized with integrated task management for academic and campus life.</p>
+                </div>
+                <div class="glass-card p-8 text-center">
+                    <i class="fas fa-chart-line feature-icon"></i>
+                    <h3 class="text-xl font-bold mb-4">Analytics Dashboard</h3>
+                    <p>Gain insights through comprehensive analytics and visualization tools.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="py-20 bg-gradient-to-b from-transparent to-indigo-50 dark:to-indigo-900">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-16">What Our Users Say</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="testimonial-card">
+                    <p class="mb-4">"UniConnect has revolutionized how we gather and respond to student feedback. It's made our campus more connected than ever!"</p>
+                    <div class="flex items-center">
+                        <img src="https://picsum.photos/50/50?random=2" alt="User" class="rounded-full mr-4">
+                        <div>
+                            <h4 class="font-bold">Dr. Sarah Johnson</h4>
+                            <p class="text-sm">Computer Science Professor</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- More testimonials... -->
+            </div>
+        </div>
+    </section>
 
     <script>
-        // Theme Toggle
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-            const icon = document.querySelector('.theme-toggle i');
+        // Dark Mode Toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const body = document.body;
+
+        darkModeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            const icon = darkModeToggle.querySelector('i');
             icon.classList.toggle('fa-moon');
             icon.classList.toggle('fa-sun');
-        }
+        });
 
-        // Password Strength Meter
-        const passwordInput = document.getElementById('password');
-        const strengthMeter = document.querySelector('.strength-meter');
-
-        passwordInput.addEventListener('input', updateStrengthMeter);
-
-        function updateStrengthMeter() {
-            const password = passwordInput.value;
-            const strength = calculatePasswordStrength(password);
-            
-            strengthMeter.className = 'strength-meter';
-            if (strength > 80) strengthMeter.classList.add('strong');
-            else if (strength > 50) strengthMeter.classList.add('medium');
-            else if (strength > 0) strengthMeter.classList.add('weak');
-        }
-
-        function calculatePasswordStrength(password) {
-            let strength = 0;
-            if (password.length >= 8) strength += 20;
-            if (password.match(/[a-z]+/)) strength += 20;
-            if (password.match(/[A-Z]+/)) strength += 20;
-            if (password.match(/[0-9]+/)) strength += 20;
-            if (password.match(/[$@#&!]+/)) strength += 20;
-            return strength;
-        }
-
-        // Biometric Authentication
-        async function handleBiometric() {
-            try {
-                if (!window.PublicKeyCredential) {
-                    throw new Error('WebAuthn not supported');
+        // Scroll Animations
+        document.addEventListener('DOMContentLoaded', () => {
+            gsap.from('.glass-card', {
+                duration: 1,
+                y: 50,
+                opacity: 0,
+                stagger: 0.2,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: '.glass-card',
+                    start: 'top bottom-=100',
+                    toggleActions: 'play none none reverse'
                 }
-
-                const loader = document.getElementById('loader');
-                loader.style.display = 'block';
-
-                // Check if biometric auth is available
-                const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-                if (!available) {
-                    throw new Error('Biometric authentication not available');
-                }
-
-                // Implement WebAuthn authentication here
-                // This is a simplified version - you'll need to implement the full WebAuthn flow
-                const credential = await navigator.credentials.get({
-                    publicKey: {
-                        challenge: new Uint8Array(32),
-                        rpId: window.location.hostname,
-                        allowCredentials: [],
-                        userVerification: 'required'
-                    }
-                });
-
-                // Handle successful authentication
-                document.getElementById('successMessage').textContent = 'Biometric authentication successful';
-                document.getElementById('successMessage').style.display = 'block';
-
-            } catch (error) {
-                document.getElementById('generalError').textContent = error.message;
-                document.getElementById('generalError').style.display = 'block';
-            } finally {
-                document.getElementById('loader').style.display = 'none';
-            }
-        }
-
-        // Login Handler
-        async function handleLogin(event) {
-            event.preventDefault();
-            
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const loader = document.getElementById('loader');
-            
-            // Reset error messages
-            document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
-            document.getElementById('successMessage').style.display = 'none';
-            
-            try {
-                loader.style.display = 'block';
-
-                // Validate input
-                if (!validateEmail(email)) {
-                    throw new Error('Invalid email format');
-                }
-
-                if (!validatePassword(password)) {
-                    throw new Error('Password must be at least 8 characters long');
-                }
-
-                // API call would go here
-                await simulateApiCall({ email, password });
-
-                document.getElementById('successMessage').textContent = 'Login successful';
-                document.getElementById('successMessage').style.display = 'block';
-                
-                // Redirect to dashboard after successful login
-                // window.location.href = '/dashboard';
-
-            } catch (error) {
-                document.getElementById('generalError').textContent = error.message;
-                document.getElementById('generalError').style.display = 'block';
-            } finally {
-                loader.style.display = 'none';
-            }
-        }
-
-        // Validation Functions
-        function validateEmail(email) {
-            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-        }
-
-        function validatePassword(password) {
-            return password.length >= 8;
-        }
-
-        // Simulate API Call
-        function simulateApiCall(data) {
-            return new Promise((resolve, reject) => {
-                setTimeout(() => {
-                    if (Math.random() > 0.5) {
-                        resolve({ success: true });
-                    } else {
-                        reject(new Error('Invalid credentials'));
-                    }
-                }, 1500);
             });
-        }
+        });
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
     </script>
 </body>
 </html>

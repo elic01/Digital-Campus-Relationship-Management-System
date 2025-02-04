@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniConnect - Student Dashboard</title>
+    
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --secondary: #3730a3;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-light: #f3f4f6;
+            --bg-dark: #1f2937;
+            --text-light: #374151;
+            --text-dark: #f3f4f6;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            transition: all 0.3s ease;
+            min-height: 100vh;
+        }
+
+        body.dark-mode {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode .sidebar {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .content-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode .content-card {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .star-rating {
+            display: inline-flex;
+            font-size: 1.5rem;
+            color: #fbbf24;
+        }
+
+        .star-rating input {
+            display: none;
+        }
+
+        .star-rating label {
+            cursor: pointer;
+            padding: 0 2px;
+            transition: all 0.2s ease;
+        }
+
+        .star-rating label:hover,
+        .star-rating label:hover ~ label,
+        .star-rating input:checked ~ label {
+            color: #f59e0b;
+            transform: scale(1.2);
+        }
+
+        .review-form input,
+        .review-form textarea,
+        .review-form select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border-radius: 8px;
+            padding: 0.75rem;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode .review-form input,
+        .dark-mode .review-form textarea,
+        .dark-mode .review-form select {
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--text-dark);
+        }
+
+        .review-form input:focus,
+        .review-form textarea:focus,
+        .review-form select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .category-pill {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-pill.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        .animated-bg::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                rgba(79, 70, 229, 0.1),
+                rgba(55, 48, 163, 0.1),
+                rgba(79, 70, 229, 0.1)
+            );
+            animation: gradient 15s ease infinite;
+        }
+
+        @keyframes gradient {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <div class="sidebar w-64 fixed h-full p-4">
+            <div class="flex items-center justify-center mb-8">
+                <h1 class="text-2xl font-bold">UniConnect</h1>
+            </div>
+
+            <nav class="space-y-4">
+                <a href="#" class="flex items-center space-x-3 p-3 rounded-lg bg-indigo-500 text-white">
+                    <i class="fas fa-star"></i>
+                    <span>Reviews</span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-indigo-100 dark:hover:bg-gray-800">
+                    <i class="fas fa-tasks"></i>
+                    <span>Tasks</span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-indigo-100 dark:hover:bg-gray-800">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Issues</span>
+                    <span class="notification-badge">3</span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-indigo-100 dark:hover:bg-gray-800">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+            </nav>
+
+            <div class="absolute bottom-4 left-4 right-4">
+                <button id="darkModeToggle" class="w-full p-3 rounded-lg bg-gray-100 dark:bg-gray-800">
+                    <i class="fas fa-moon mr-2"></i>
+                    <span>Dark Mode</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="ml-64 flex-1 p-8">
+            <!-- Header -->
+            <header class="flex justify-between items-center mb-8">
+                <div>
+                    <h2 class="text-3xl font-bold">Submit Review</h2>
+                    <p class="text-gray-600 dark:text-gray-400">Share your feedback to help improve campus life</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <i class="fas fa-bell text-xl cursor-pointer"></i>
+                        <span class="notification-badge">2</span>
+                    </div>
+                    <img src="https://picsum.photos/40/40?random=1" alt="Profile" class="w-10 h-10 rounded-full">
+                </div>
+            </header>
+
+            <!-- Review Categories -->
+            <div class="flex space-x-4 mb-8">
+                <div class="category-pill active">
+                    <i class="fas fa-chalkboard-teacher mr-2"></i>
+                    Lecture
+                </div>
+                <div class="category-pill">
+                    <i class="fas fa-utensils mr-2"></i>
+                    Canteen
+                </div>
+                <div class="category-pill">
+                    <i class="fas fa-home mr-2"></i>
+                    Hostel
+                </div>
+                <div class="category-pill">
+                    <i class="fas fa-university mr-2"></i>
+                    Campus
+                </div>
+            </div>
+
+            <!-- Review Form -->
+            <div class="content-card p-6">
+                <form class="review-form space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block mb-2">Select Course</label>
+                            <select required>
+                                <option value="">Choose a course...</option>
+                                <option>Computer Science 101</option>
+                                <option>Mathematics 202</option>
+                                <option>Physics 301</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block mb-2">Lecturer</label>
+                            <select required>
+                                <option value="">Select lecturer...</option>
+                                <option>Dr. Sarah Johnson</option>
+                                <option>Prof. Michael Smith</option>
+                                <option>Dr. Emily Brown</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block mb-2">Rating</label>
+                        <div class="star-rating">
+                            <input type="radio" id="star5" name="rating" value="5">
+                            <label for="star5"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="star4" name="rating" value="4">
+                            <label for="star4"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="star3" name="rating" value="3">
+                            <label for="star3"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="star2" name="rating" value="2">
+                            <label for="star2"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="star1" name="rating" value="1">
+                            <label for="star1"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block mb-2">Review Title</label>
+                        <input type="text" placeholder="Enter a brief title for your review" required>
+                    </div>
+
+                    <div>
+                        <label class="block mb-2">Detailed Review</label>
+                        <textarea rows="4" placeholder="Share your experience in detail..." required></textarea>
+                    </div>
+
+                    <div class="flex items-center space-x-4">
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-paper-plane mr-2"></i>
+                            Submit Review
+                        </button>
+                        <button type="button" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+                            <i class="fas fa-times mr-2"></i>
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Recent Reviews -->
+            <div class="mt-8">
+                <h3 class="text-xl font-bold mb-4">Your Recent Reviews</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="content-card p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-bold">Computer Science 101</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Dr. Sarah Johnson</p>
+                            </div>
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                        </div>
+                        <p class="mt-2">Great lecture! The concepts were explained clearly...</p>
+                        <div class="mt-2 text-sm text-gray-500">2 days ago</div>
+                    </div>
+
+                    <div class="content-card p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-bold">Campus Library</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Facility Review</p>
+                            </div>
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                        <p class="mt-2">Excellent study environment and resources...</p>
+                        <div class="mt-2 text-sm text-gray-500">1 week ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dark Mode Toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const body = document.body;
+
+        darkModeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            const icon = darkModeToggle.querySelector('i');
+            icon.classList.toggle('fa-moon');
+            icon.classList.toggle('fa-sun');
+        });
+
+        // Category Pills
+        document.querySelectorAll('.category-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+            });
+        });
+
+        // Form Submission Animation
+        document.querySelector('.review-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const submitBtn = e.target.querySelector('.submit-btn');
+            submitBtn.innerHTML = '<i class="fas fa-check mr-2"></i>Review Submitted';
+            submitBtn.style.background = 'var(--success)';
+            
+            gsap.to(submitBtn, {
+                scale: 1.05,
+                duration: 0.2,
+                yoyo: true,
+                repeat: 1
+            });
+
+            setTimeout(() => {
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Submit Review';
+                submitBtn.style.background = '';
+                e.target.reset();
+            }, 2000);
+        });
+
+        // Animations
+        gsap.from('.content-card', {
+            y: 20,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.2,
+            ease: 'power3.out'
+        });
+
+        gsap.from('.category-pill', {
+            scale: 0.9,
+            opacity: 0,
+            duration: 0.5,
+            stagger: 0.1,
+            ease: 'power2.out'
+        });
+    </script>
+</body>
+</html>
