@@ -81,6 +81,24 @@
             color: #f59e0b;
             transform: scale(1.2);
         }
+        
+/* Add this to the existing CSS section */
+.star-rating label .far {
+    display: inline-block;
+}
+
+.star-rating label .fas {
+    display: none;
+}
+
+.star-rating input:checked ~ label .fas {
+    display: inline-block;
+}
+
+.star-rating input:checked ~ label .far {
+    display: none;
+}
+
 
         .review-form input,
         .review-form textarea,
@@ -281,19 +299,33 @@
                     <div>
                         <label class="block mb-2">Rating</label>
                         <div class="star-rating">
-                            <input type="radio" id="star5" name="rating" value="5">
-                            <label for="star5"><i class="fas fa-star"></i></label>
-                            <input type="radio" id="star4" name="rating" value="4">
-                            <label for="star4"><i class="fas fa-star"></i></label>
-                            <input type="radio" id="star3" name="rating" value="3">
-                            <label for="star3"><i class="fas fa-star"></i></label>
-                            <input type="radio" id="star2" name="rating" value="2">
-                            <label for="star2"><i class="fas fa-star"></i></label>
                             <input type="radio" id="star1" name="rating" value="1">
-                            <label for="star1"><i class="fas fa-star"></i></label>
+                            <label for="star1">
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </label>
+                            <input type="radio" id="star2" name="rating" value="2">
+                            <label for="star2">
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </label>
+                            <input type="radio" id="star3" name="rating" value="3">
+                            <label for="star3">
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </label>
+                            <input type="radio" id="star4" name="rating" value="4">
+                            <label for="star4">
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </label>
+                            <input type="radio" id="star5" name="rating" value="5">
+                            <label for="star5">
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </label>
                         </div>
                     </div>
-
                     <div>
                         <label class="block mb-2">Review Title</label>
                         <input type="text" placeholder="Enter a brief title for your review" required>
@@ -360,65 +392,270 @@
             </div>
         </div>
     </div>
+      <script>
+          // Dark Mode Toggle
+          const darkModeToggle = document.getElementById('darkModeToggle');
+          const body = document.body;
 
-    <script>
-        // Dark Mode Toggle
-        const darkModeToggle = document.getElementById('darkModeToggle');
-        const body = document.body;
+          darkModeToggle.addEventListener('click', () => {
+              body.classList.toggle('dark-mode');
+              const icon = darkModeToggle.querySelector('i');
+              icon.classList.toggle('fa-moon');
+              icon.classList.toggle('fa-sun');
+          });
 
-        darkModeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            const icon = darkModeToggle.querySelector('i');
-            icon.classList.toggle('fa-moon');
-            icon.classList.toggle('fa-sun');
-        });
+          // Category Pills
+          document.querySelectorAll('.category-pill').forEach(pill => {
+              pill.addEventListener('click', () => {
+                  document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+                  pill.classList.add('active');
+              });
+          });
 
-        // Category Pills
-        document.querySelectorAll('.category-pill').forEach(pill => {
-            pill.addEventListener('click', () => {
-                document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
-                pill.classList.add('active');
+          // Form Submission Animation
+          document.querySelector('.review-form').addEventListener('submit', (e) => {
+              e.preventDefault();
+            
+              const submitBtn = e.target.querySelector('.submit-btn');
+              submitBtn.innerHTML = '<i class="fas fa-check mr-2"></i>Review Submitted';
+              submitBtn.style.background = 'var(--success)';
+            
+              gsap.to(submitBtn, {
+                  scale: 1.05,
+                  duration: 0.2,
+                  yoyo: true,
+                  repeat: 1
+              });
+
+              setTimeout(() => {
+                  submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Submit Review';
+                  submitBtn.style.background = '';
+                  e.target.reset();
+              }, 2000);
+          });
+
+          // Animations
+          gsap.from('.content-card', {
+              y: 20,
+              opacity: 0,
+              duration: 0.8,
+              stagger: 0.2,
+              ease: 'power3.out'
+          });
+
+          gsap.from('.category-pill', {
+              scale: 0.9,
+              opacity: 0,
+              duration: 0.5,
+              stagger: 0.1,
+              ease: 'power2.out'
+          });
+
+          // Review form content for different categories
+          const formTemplates = {
+              lecture: `
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                          <label class="block mb-2">Select Course</label>
+                          <select required>
+                              <option value="">Choose a course...</option>
+                              <option>Computer Science 101</option>
+                              <option>Mathematics 202</option>
+                              <option>Physics 301</option>
+                          </select>
+                      </div>
+                      <div>
+                          <label class="block mb-2">Lecturer</label>
+                          <select required>
+                              <option value="">Select lecturer...</option>
+                              <option>Dr. Sarah Johnson</option>
+                              <option>Prof. Michael Smith</option>
+                              <option>Dr. Emily Brown</option>
+                          </select>
+                      </div>
+                  </div>
+              `,
+              canteen: `
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                          <label class="block mb-2">Select Canteen</label>
+                          <select required>
+                              <option value="">Choose a canteen...</option>
+                              <option>Main Cafeteria</option>
+                              <option>Coffee Shop</option>
+                              <option>Food Court</option>
+                          </select>
+                      </div>
+                      <div>
+                          <label class="block mb-2">Food Category</label>
+                          <select required>
+                              <option value="">Select category...</option>
+                              <option>Breakfast</option>
+                              <option>Lunch</option>
+                              <option>Snacks</option>
+                              <option>Beverages</option>
+                          </select>
+                      </div>
+                  </div>
+              `,
+              hostel: `
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                          <label class="block mb-2">Hostel Building</label>
+                          <select required>
+                              <option value="">Select hostel...</option>
+                              <option>Block A</option>
+                              <option>Block B</option>
+                              <option>Block C</option>
+                          </select>
+                      </div>
+                      <div>
+                          <label class="block mb-2">Room Type</label>
+                          <select required>
+                              <option value="">Select room type...</option>
+                              <option>Single Room</option>
+                              <option>Double Sharing</option>
+                              <option>Triple Sharing</option>
+                          </select>
+                      </div>
+                  </div>
+              `,
+              campus: `
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                          <label class="block mb-2">Facility Type</label>
+                          <select required>
+                              <option value="">Select facility...</option>
+                              <option>Library</option>
+                              <option>Sports Complex</option>
+                              <option>Laboratory</option>
+                              <option>Parking</option>
+                          </select>
+                      </div>
+                      <div>
+                          <label class="block mb-2">Location</label>
+                          <select required>
+                              <option value="">Select location...</option>
+                              <option>North Campus</option>
+                              <option>South Campus</option>
+                              <option>Main Building</option>
+                          </select>
+                      </div>
+                  </div>
+              `
+          };
+
+          // Update form based on selected category
+          document.querySelectorAll('.category-pill').forEach(pill => {
+              pill.addEventListener('click', () => {
+                  const category = pill.textContent.trim().toLowerCase();
+                  const formContent = document.querySelector('.review-form .grid');
+                
+                  // Update form fields
+                  if (formTemplates[category]) {
+                      formContent.outerHTML = formTemplates[category];
+                  }
+                
+                  // Update form title
+                  const formTitle = document.querySelector('header h2');
+                  formTitle.textContent = `Submit ${category.charAt(0).toUpperCase() + category.slice(1)} Review`;
+              });
+          });
+
+          // Add functionality to navigation buttons
+          document.querySelectorAll('nav a').forEach(link => {
+              link.addEventListener('click', (e) => {
+                  e.preventDefault();
+                  // Remove active class from all nav items
+                  document.querySelectorAll('nav a').forEach(item => {
+                      item.classList.remove('bg-indigo-500', 'text-white');
+                      item.classList.add('hover:bg-indigo-100', 'dark:hover:bg-gray-800');
+                  });
+                
+                  // Add active class to clicked item
+                  link.classList.add('bg-indigo-500', 'text-white');
+                  link.classList.remove('hover:bg-indigo-100', 'dark:hover:bg-gray-800');
+              });
+          });
+
+          // Add functionality to notification bell
+          document.querySelector('.fa-bell').addEventListener('click', () => {
+              alert('Notifications feature coming soon!');
+          });
+
+          // Add functionality to profile image
+          document.querySelector('header img').addEventListener('click', () => {
+              alert('Profile settings coming soon!');
+          });
+          // Add this code to the existing JavaScript section
+
+// Reset button functionality
+const resetForm = () => {
+    const form = document.querySelector('.review-form');
+    form.reset();
+    clearStarRating();
+    
+    // Reset submit button style
+    const submitBtn = form.querySelector('.submit-btn');
+    submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Submit Review';
+    submitBtn.style.background = '';
+};
+
+// Clear star rating
+const clearStarRating = () => {
+    const stars = document.querySelectorAll('.star-rating input');
+    stars.forEach(star => star.checked = false);
+};
+
+// Add click handler to cancel button
+document.querySelector('.review-form button[type="button"]').addEventListener('click', resetForm);
+
+// Add clear stars button to the rating section
+document.querySelector('.star-rating').insertAdjacentHTML('afterend', `
+    <button type="button" class="text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 mt-2" onclick="clearStarRating()">
+        <i class="fas fa-times mr-1"></i>Clear rating
+    </button>
+`);
+
+
+// Add this to the existing JavaScript section
+const initializeStarRating = () => {
+    const starContainers = document.querySelectorAll('.star-rating');
+    
+    starContainers.forEach(container => {
+        const stars = container.querySelectorAll('label');
+        
+        stars.forEach((star, index) => {
+            star.addEventListener('mouseover', () => {
+                for (let i = 0; i <= index; i++) {
+                    stars[i].querySelector('.fas').style.display = 'inline-block';
+                    stars[i].querySelector('.far').style.display = 'none';
+                }
+            });
+            
+            star.addEventListener('mouseout', () => {
+                stars.forEach(s => {
+                    if (!s.previousElementSibling.checked) {
+                        s.querySelector('.fas').style.display = 'none';
+                        s.querySelector('.far').style.display = 'inline-block';
+                    }
+                });
             });
         });
+    });
+};
 
-        // Form Submission Animation
-        document.querySelector('.review-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const submitBtn = e.target.querySelector('.submit-btn');
-            submitBtn.innerHTML = '<i class="fas fa-check mr-2"></i>Review Submitted';
-            submitBtn.style.background = 'var(--success)';
-            
-            gsap.to(submitBtn, {
-                scale: 1.05,
-                duration: 0.2,
-                yoyo: true,
-                repeat: 1
-            });
+// Initialize star rating system for all forms
+initializeStarRating();
 
-            setTimeout(() => {
-                submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Submit Review';
-                submitBtn.style.background = '';
-                e.target.reset();
-            }, 2000);
-        });
+// Add this to the form template generation code
+document.querySelectorAll('.category-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+        // ... existing code ...
+        initializeStarRating(); // Reinitialize stars after form template change
+    });
+});
 
-        // Animations
-        gsap.from('.content-card', {
-            y: 20,
-            opacity: 0,
-            duration: 0.8,
-            stagger: 0.2,
-            ease: 'power3.out'
-        });
-
-        gsap.from('.category-pill', {
-            scale: 0.9,
-            opacity: 0,
-            duration: 0.5,
-            stagger: 0.1,
-            ease: 'power2.out'
-        });
-    </script>
-</body>
+      </script>
+  </body>
 </html>
