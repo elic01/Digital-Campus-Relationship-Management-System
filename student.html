@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UniConnect - Student Dashboard</title>
-    
     <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -34,17 +33,18 @@
             background-color: var(--bg-dark);
             color: var(--text-dark);
         }
+
         .profile-dropdown {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             z-index: 50;
             transition: all 0.3s ease;
         }
-        
+
         .dark-mode .profile-dropdown {
             background: rgba(31, 41, 55, 0.95);
         }
-        
+
         .sidebar {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
@@ -91,24 +91,22 @@
             color: #f59e0b;
             transform: scale(1.2);
         }
-        
-/* Add this to the existing CSS section */
-.star-rating label .far {
-    display: inline-block;
-}
 
-.star-rating label .fas {
-    display: none;
-}
+        .star-rating label .far {
+            display: inline-block;
+        }
 
-.star-rating input:checked ~ label .fas {
-    display: inline-block;
-}
+        .star-rating label .fas {
+            display: none;
+        }
 
-.star-rating input:checked ~ label .far {
-    display: none;
-}
+        .star-rating input:checked ~ label .fas {
+            display: inline-block;
+        }
 
+        .star-rating input:checked ~ label .far {
+            display: none;
+        }
 
         .review-form input,
         .review-form textarea,
@@ -205,181 +203,179 @@
             align-items: center;
             justify-content: center;
         }
-        /* Profile Modal Styles */
-#profileModal .content-card {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    transition: all 0.3s ease;
-}
 
-.dark-mode #profileModal .content-card {
-    background: rgba(31, 41, 55, 0.95);
-}
+        #profileModal .content-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
 
-#profileModal input,
-#profileModal select,
-#profileModal textarea {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(5px);
-    border-radius: 8px;
-    padding: 0.75rem;
-    width: 100%;
-    transition: all 0.3s ease;
-}
+        .dark-mode #profileModal .content-card {
+            background: rgba(31, 41, 55, 0.95);
+        }
 
-.dark-mode #profileModal input,
-.dark-mode #profileModal select,
-.dark-mode #profileModal textarea {
-    background: rgba(0, 0, 0, 0.2);
-    color: var(--text-dark);
-}
+        #profileModal input,
+        #profileModal select,
+        #profileModal textarea {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border-radius: 8px;
+            padding: 0.75rem;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
 
-#profileModal input:focus,
-#profileModal select:focus,
-#profileModal textarea:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
-}
+        .dark-mode #profileModal input,
+        .dark-mode #profileModal select,
+        .dark-mode #profileModal textarea {
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--text-dark);
+        }
 
-#profileImage {
-    border: 4px solid var(--primary);
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
-    transition: all 0.3s ease;
-}
+        #profileModal input:focus,
+        #profileModal select:focus,
+        #profileModal textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        }
 
-#profileImage:hover {
-    transform: scale(1.02);
-}
+        #profileImage {
+            border: 4px solid var(--primary);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+            transition: all 0.3s ease;
+        }
 
-#profileModal label[for="profileImage"] {
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
+        #profileImage:hover {
+            transform: scale(1.02);
+        }
 
-#profileModal label[for="profileImage"]:hover {
-    background: var(--secondary);
-    transform: scale(1.1);
-}
+        #profileModal label[for="profileImage"] {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
 
-#profileModal .submit-btn {
-    background: linear-gradient(45deg, var(--primary), var(--secondary));
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
+        #profileModal label[for="profileImage"]:hover {
+            background: var(--secondary);
+            transform: scale(1.1);
+        }
 
-#profileModal .submit-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-}
+        #profileModal .submit-btn {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
 
-/* Profile Form Animation */
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+        #profileModal .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
 
-#profileModal form {
-    animation: slideIn 0.5s ease forwards;
-}
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-/* Profile Stats Section */
-.profile-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    margin-top: 1.5rem;
-}
+        #profileModal form {
+            animation: slideIn 0.5s ease forwards;
+        }
 
-.stat-card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(5px);
-    border-radius: 12px;
-    padding: 1rem;
-    text-align: center;
-    transition: all 0.3s ease;
-}
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
 
-.dark-mode .stat-card {
-    background: rgba(0, 0, 0, 0.2);
-}
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
 
-.stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
-}
+        .dark-mode .stat-card {
+            background: rgba(0, 0, 0, 0.2);
+        }
 
-.stat-number {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--primary);
-}
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+        }
 
-.stat-label {
-    font-size: 0.875rem;
-    color: var(--text-light);
-}
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
 
-.dark-mode .stat-label {
-    color: var(--text-dark);
-}
-.notifications-dropdown {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    width: 320px;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    opacity: 0;
-    transform: translateY(10px);
-    pointer-events: none;
-    transition: all 0.3s ease;
-    z-index: 50;
-}
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
 
-.dark-mode .notifications-dropdown {
-    background: rgba(31, 41, 55, 0.95);
-}
+        .dark-mode .stat-label {
+            color: var(--text-dark);
+        }
+        .notifications-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 320px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
+            transition: all 0.3s ease;
+            z-index: 50;
+        }
 
-.notifications-dropdown.active {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: all;
-}
+        .dark-mode .notifications-dropdown {
+            background: rgba(31, 41, 55, 0.95);
+        }
 
-.notification-item {
-    padding: 1rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-}
+        .notifications-dropdown.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+        }
 
-.notification-item:hover {
-    background: rgba(79, 70, 229, 0.1);
-}
+        .notification-item {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
 
-.notification-item.unread {
-    background: rgba(79, 70, 229, 0.05);
-}
+        .notification-item:hover {
+            background: rgba(79, 70, 229, 0.1);
+        }
 
-.notification-dot {
-    width: 8px;
-    height: 8px;
-    background: var(--primary);
-    border-radius: 50%;
-    margin-right: 8px;
-}
+        .notification-item.unread {
+            background: rgba(79, 70, 229, 0.05);
+        }
+
+        .notification-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            margin-right: 8px;
+        }
 
     </style>
 </head>
@@ -446,13 +442,13 @@
                             <div class="max-h-[400px] overflow-y-auto" id="notificationsList"></div>
                         </div>
                     </div>
-                    
+
                     <!-- Profile -->
                     <div class="relative">
-                        <img src="https://picsum.photos/40/40?random=1" alt="Profile" class="w-10 h-10 rounded-full cursor-pointer hover:ring-2 hover:ring-indigo-500 transition-all" id="headerProfileImage">
+                        <img src="profile.jpeg" alt="Profile" class="w-10 h-10 rounded-full cursor-pointer hover:ring-2 hover:ring-indigo-500 transition-all" id="headerProfileImage">
                         <div class="profile-dropdown hidden absolute right-0 top-12 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
                             <div class="p-4 border-b border-gray-200 dark:border-gray-700">
-                                <p class="font-bold">John Doe</p>
+                                <p class="font-bold">Emmanuel L I Chinjekure</p>
                                 <p class="text-sm text-gray-600 dark:text-gray-400">Student</p>
                             </div>
                             <div class="p-2">
@@ -499,18 +495,25 @@
                             <label class="block mb-2">Select Course</label>
                             <select required>
                                 <option value="">Choose a course...</option>
-                                <option>Computer Science 101</option>
-                                <option>Mathematics 202</option>
-                                <option>Physics 301</option>
+                                <option>Technopreneurship IV</option>
+                                <option>Product Development Project</option>
+                                <option>Mobile Application Development</option>
+                                <option>Management Information Systems</option>
+                                <option>E-Business</option>
+                                <option>Systema Analysis and Design</option>
+                                <option>Applied Statistics</option>
                             </select>
                         </div>
                         <div>
                             <label class="block mb-2">Lecturer</label>
                             <select required>
                                 <option value="">Select lecturer...</option>
-                                <option>Dr. Sarah Johnson</option>
-                                <option>Prof. Michael Smith</option>
-                                <option>Dr. Emily Brown</option>
+                                <option>Mr S.Mavuchi</option>
+                                <option>Mr T.Butsa</option>
+                                <option>Mr T.Mudawarima</option>
+                                <option>Mr M.Mutandavari</option>
+                                <option>Mr O.Gotora</option>
+                                <option>Mr Sumbureru</option>
                             </select>
                         </div>
                     </div>
@@ -575,8 +578,8 @@
                     <div class="content-card p-4">
                         <div class="flex justify-between items-start">
                             <div>
-                                <h4 class="font-bold">Computer Science 101</h4>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">Dr. Sarah Johnson</p>
+                                <h4 class="font-bold">Mobile Application Development</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Mr S.Mavuchi</p>
                             </div>
                             <div class="flex text-yellow-400">
                                 <i class="fas fa-star"></i>
@@ -630,8 +633,8 @@
                             <input type="file" class="hidden" accept="image/*" onchange="updateProfileImage(this)">
                         </label>
                     </div>
-                    <h4 class="font-bold text-lg">John Doe</h4>
-                    <p class="text-gray-600">Student ID: ST2024001</p>
+                    <h4 class="font-bold text-lg">Emmanuel L I Chinjekure</h4>
+                    <p class="text-gray-600">Student ID: H230393F</p>
                 </div>
     
                 <!-- Profile Details Section -->
@@ -640,26 +643,27 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block mb-2">First Name</label>
-                                <input type="text" value="John" required>
+                                <input type="text" value="Emmanuel L I" required>
                             </div>
                             <div>
                                 <label class="block mb-2">Last Name</label>
-                                <input type="text" value="Doe" required>
+                                <input type="text" value="Chinjekure" required>
                             </div>
                             <div>
                                 <label class="block mb-2">Email</label>
-                                <input type="email" value="john.doe@university.edu" required>
+                                <input type="email" value="h230393f@hit.ac.zw" required>
                             </div>
                             <div>
                                 <label class="block mb-2">Phone</label>
-                                <input type="tel" value="+1 234 567 8900" required>
+                                <input type="tel" value="+263 78 854 7017" required>
                             </div>
                             <div>
                                 <label class="block mb-2">Department</label>
                                 <select required>
                                     <option>Computer Science</option>
-                                    <option>Engineering</option>
-                                    <option>Business</option>
+                                    <option selected>Information Technology</option>
+                                    <option>Information Security Assurance</option>
+                                    <option>Software Engineering</option>
                                 </select>
                             </div>
                             <div>
@@ -675,7 +679,7 @@
     
                         <div>
                             <label class="block mb-2">Bio</label>
-                            <textarea rows="3" placeholder="Tell us about yourself...">Computer Science student passionate about web development and AI.</textarea>
+                            <textarea rows="3" placeholder="Tell us about yourself...">Aspiring Software Developer.</textarea>
                         </div>
     
                         <div class="flex justify-end space-x-4">
@@ -689,8 +693,8 @@
             </div>
         </div>
     </div>
-    
-      <script>
+
+    <script>
           // Dark Mode Toggle
           const darkModeToggle = document.getElementById('darkModeToggle');
           const body = document.body;
@@ -721,7 +725,7 @@ const initializeNotifications = () => {
         {
             id: 1,
             title: 'New Course Review',
-            message: 'Your review for CS101 has been published',
+            message: 'Your review for IIT2201 has been published',
             time: '2 minutes ago',
             unread: true
         },
@@ -809,11 +813,11 @@ document.addEventListener('DOMContentLoaded', initializeNotifications);
           // Form Submission Animation
           document.querySelector('.review-form').addEventListener('submit', (e) => {
               e.preventDefault();
-            
+
               const submitBtn = e.target.querySelector('.submit-btn');
               submitBtn.innerHTML = '<i class="fas fa-check mr-2"></i>Review Submitted';
               submitBtn.style.background = 'var(--success)';
-            
+
               gsap.to(submitBtn, {
                   scale: 1.05,
                   duration: 0.2,
@@ -850,21 +854,27 @@ document.addEventListener('DOMContentLoaded', initializeNotifications);
               lecture: `
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                          <label class="block mb-2">Select Course</label>
-                          <select required>
-                              <option value="">Choose a course...</option>
-                              <option>Computer Science 101</option>
-                              <option>Mathematics 202</option>
-                              <option>Physics 301</option>
-                          </select>
+                        <label class="block mb-2">Select Course</label>
+                        <select required>
+                            <option value="">Choose a course...</option>
+                            <option>Technopreneurship IV</option>
+                            <option>Product Development Project</option>
+                            <option>Mobile Application Development</option>
+                            <option>Management Information Systems</option>
+                            <option>E-Business</option>
+                            <option>Systema Analysis and Design</option>
+                            <option>Applied Statistics</option>
                       </div>
                       <div>
                           <label class="block mb-2">Lecturer</label>
                           <select required>
-                              <option value="">Select lecturer...</option>
-                              <option>Dr. Sarah Johnson</option>
-                              <option>Prof. Michael Smith</option>
-                              <option>Dr. Emily Brown</option>
+                                <option value="">Select lecturer...</option>
+                                <option>Mr S.Mavuchi</option>
+                                <option>Mr T.Butsa</option>
+                                <option>Mr T.Mudawarima</option>
+                                <option>Mr M.Mutandavari</option>
+                                <option>Mr O.Gotora</option>
+                                <option>Mr Sumbureru</option>
                           </select>
                       </div>
                   </div>
@@ -876,8 +886,8 @@ document.addEventListener('DOMContentLoaded', initializeNotifications);
                           <select required>
                               <option value="">Choose a canteen...</option>
                               <option>Main Cafeteria</option>
-                              <option>Coffee Shop</option>
-                              <option>Food Court</option>
+                              <option>TuckShop</option>
+                              <option>Food Vendors Gate</option>
                           </select>
                       </div>
                       <div>
@@ -898,18 +908,19 @@ document.addEventListener('DOMContentLoaded', initializeNotifications);
                           <label class="block mb-2">Hostel Building</label>
                           <select required>
                               <option value="">Select hostel...</option>
-                              <option>Block A</option>
-                              <option>Block B</option>
-                              <option>Block C</option>
+                              <option>Hostel 1/option>
+                              <option>Hostel 2</option>
+                              <option>Hostel 3</option>
+                              <option>Hostel 4</option>
                           </select>
                       </div>
                       <div>
-                          <label class="block mb-2">Room Type</label>
+                          <label class="block mb-2">Room Side</label>
                           <select required>
-                              <option value="">Select room type...</option>
-                              <option>Single Room</option>
-                              <option>Double Sharing</option>
-                              <option>Triple Sharing</option>
+                              <option value="">Select room side...</option>
+                              <option>Left Side("Kitchen")</option>
+                              <option>Right Side("Bedroom")</option>
+                              <option>Both Sides</option>
                           </select>
                       </div>
                   </div>
@@ -921,8 +932,9 @@ document.addEventListener('DOMContentLoaded', initializeNotifications);
                           <select required>
                               <option value="">Select facility...</option>
                               <option>Library</option>
-                              <option>Sports Complex</option>
-                              <option>Laboratory</option>
+                              <option>Halls</option>
+                              <option>Classes</option>
+                              <option>Class Laboratories</option>
                               <option>Parking</option>
                           </select>
                       </div>
@@ -998,8 +1010,6 @@ document.querySelector('.star-rating').insertAdjacentHTML('afterend', `
     </button>
 `);
 
-
-// Add this to the existing JavaScript section
 const initializeStarRating = () => {
     const starContainers = document.querySelectorAll('.star-rating');
     
@@ -1422,6 +1432,6 @@ document.querySelector('.review-form').addEventListener('submit', (e) => {
     }, 2000);
 });
 
-      </script>
-  </body>
+    </script>
+</body>
 </html>
