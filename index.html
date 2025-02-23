@@ -49,16 +49,44 @@
             border-radius: 10px;
             background: var(--bg-light);
             box-shadow: 5px 5px 10px #d1d1d1, -5px -5px 10px #ffffff;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
         }
 
         .dark-mode .neu-button {
             background: var(--bg-dark);
             box-shadow: 5px 5px 10px #131720, -5px -5px 10px #2b3b4e;
+            color: var(--text-dark);
         }
 
+        /* Primary button styles */
+        .neu-button.bg-indigo-600 {
+            background: var(--primary-light);
+            color: white;
+            box-shadow: 5px 5px 15px rgba(79, 70, 229, 0.3);
+        }
+
+        .dark-mode .neu-button.bg-indigo-600 {
+            background: var(--primary-dark);
+            box-shadow: 5px 5px 15px rgba(55, 48, 163, 0.3);
+        }
+
+        /* Hover effects */
         .neu-button:hover {
             transform: scale(1.05);
+            box-shadow: 6px 6px 12px #d1d1d1, -6px -6px 12px #ffffff;
+        }
+
+        .dark-mode .neu-button:hover {
+            box-shadow: 6px 6px 12px #131720, -6px -6px 12px #2b3b4e;
+        }
+
+        .neu-button.bg-indigo-600:hover {
+            background: var(--primary-dark);
+            box-shadow: 6px 6px 18px rgba(79, 70, 229, 0.4);
         }
 
         .animated-bg {
