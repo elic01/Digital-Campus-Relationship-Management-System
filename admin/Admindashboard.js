@@ -297,3 +297,168 @@ const getPriorityBadgeColor = (priority) => {
 // Initialize submit functionality
 submitIssue();
 document.getElementById('issueSubmitForm').addEventListener('submit', submitIssue);
+
+// User management state
+let users = [
+    {
+        id: 1,
+        name: 'Emmanuel L I Chinjekure',
+        role: 'Student',
+        status: 'active',
+        email: 'emmanuel@example.com',
+        joinDate: '2023-01-15'
+    }
+];
+
+// Render users table
+const renderUsers = () => {
+    const tbody = document.querySelector('table tbody');
+    tbody.innerHTML = users.map(user => `
+        <tr data-id="${user.id}">
+            <td class="p-3">${user.name}</td>
+            <td class="p-3">${user.role}</td>
+            <td class="p-3">
+                <span class="px-2 py-1 ${user.status === 'active' ? 'bg-green-500' : 'bg-red-500'} text-white rounded-full text-sm">
+                    ${user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+                </span>
+            </td>
+            <td class="p-3">
+                <button onclick="editUser(${user.id})" class="text-blue-500 hover:text-blue-700">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button onclick="toggleUserStatus(${user.id})" class="text-yellow-500 hover:text-yellow-700 ml-2">
+                    <i class="fas fa-power-off"></i>
+                </button>
+                <button onclick="deleteUser(${user.id})" class="text-red-500 hover:text-red-700 ml-2">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+};
+
+// Add new user
+const addUser = (userData) => {
+    const newUser = {
+        id: Date.now(),
+        ...userData,
+        status: 'active'
+    };
+    users.unshift(newUser);
+    renderUsers();
+    saveUsers();
+};
+
+// Edit user
+const editUser = (userId) => {
+    const user = users.find(u => u.id === userId);
+    // Show edit modal/form
+    showUserForm(user);
+};
+
+// Toggle user status
+const toggleUserStatus = (userId) => {
+    const user = users.find(u => u.id === userId);
+    user.status = user.status === 'active' ? 'inactive' : 'active';
+    renderUsers();
+    saveUsers();
+};
+
+// Delete user
+const deleteUser = (userId) => {
+    if (confirm('Are you sure you want to delete this user?')) {
+        users = users.filter(u => u.id !== userId);
+        renderUsers();
+        saveUsers();
+    }
+};
+
+// Show user form modal
+const showUserForm = (user = null) => {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center';
+    modal.innerHTML = `
+        <div class="bg-white p-6 rounded-lg w-full max-w-md">
+            <h3 class="text-xl font-bold mb-4">${user ? 'Edit' : 'Add'} User</h3>
+            <form id="userForm" class="space-y-4">
+                <div>
+                    <label class="block mb-1">Name</label>
+                    <input type="text" name="name" value="${user?.name || ''}" 
+                           class="w-full p-2 border rounded" required>
+                </div>
+                <div>
+                    <label class="block mb-1">Email</label>
+                    <input type="email" name="email" value="${user?.email || ''}" 
+                           class="w-full p-2 border rounded" required>
+                </div>
+                <div>
+                    <label class="block mb-1">Role</label>
+                    <select name="role" class="w-full p-2 border rounded" required>
+                        <option value="Student" ${user?.role === 'Student' ? 'selected' : ''}>Student</option>
+                        <option value="Lecturer" ${user?.role === 'Lecturer' ? 'selected' : ''}>Lecturer</option>
+                        <option value="Admin" ${user?.role === 'Admin' ? 'selected' : ''}>Admin</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeUserForm()" 
+                            class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                        ${user ? 'Update' : 'Add'} User
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    document.getElementById('userForm').onsubmit = (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const userData = Object.fromEntries(formData);
+        
+        if (user) {
+            Object.assign(user, userData);
+        } else {
+            addUser(userData);
+        }
+        
+        closeUserForm();
+        renderUsers();
+    };
+};
+
+// Close user form modal
+const closeUserForm = () => {
+    document.querySelector('.fixed').remove();
+};
+
+// Save users to localStorage
+const saveUsers = () => {
+    localStorage.setItem('adminUsers', JSON.stringify(users));
+};
+
+// Load users from localStorage
+const loadUsers = () => {
+    const savedUsers = localStorage.getItem('adminUsers');
+    if (savedUsers) {
+        users = JSON.parse(savedUsers);
+    }
+};
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    loadUsers();
+    renderUsers();
+    
+    // Add "Add User" button to the users section
+    const usersSection = document.querySelector('.dashboard-card:last-child');
+    const addButton = document.createElement('button');
+    addButton.className = 'bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mb-4';
+    addButton.innerHTML = '<i class="fas fa-plus mr-2"></i>Add User';
+    addButton.onclick = () => showUserForm();
+    usersSection.insertBefore(addButton, usersSection.querySelector('table'));
+});
