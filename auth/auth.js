@@ -1,21 +1,38 @@
 function showForm(formType) {
+    // Get form elements
     const loginForm = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
-    const tabs = document.querySelectorAll('.tab-btn');
-    
-    if (formType === 'login') {
-        loginForm.classList.remove('hidden');
-        signupForm.classList.add('hidden');
-        tabs[0].classList.add('active');
-        tabs[1].classList.remove('active');
-    } else {
+    const loginTab = document.querySelector('[onclick="showForm(\'login\')"]');
+    const signupTab = document.querySelector('[onclick="showForm(\'signup\')"]');
+
+    // Clear any existing error messages
+    document.querySelectorAll('.error-message').forEach(error => error.remove());
+    document.querySelectorAll('.message').forEach(msg => msg.style.display = 'none');
+
+    if (formType === 'signup') {
         loginForm.classList.add('hidden');
         signupForm.classList.remove('hidden');
-        tabs[0].classList.remove('active');
-        tabs[1].classList.add('active');
+        loginTab.classList.remove('active');
+        signupTab.classList.add('active');
+        
+        // Reset signup form
+        signupForm.reset();
+        
+        // Reset password strength meter if exists
+        const strengthMeter = document.querySelector('.password-strength-meter');
+        if (strengthMeter) {
+            strengthMeter.style.background = '#eee';
+        }
+    } else {
+        signupForm.classList.add('hidden');
+        loginForm.classList.remove('hidden');
+        signupTab.classList.remove('active');
+        loginTab.classList.add('active');
+        
+        // Reset login form
+        loginForm.reset();
     }
 }
-
 // Form validation and error handling
 class FormValidator {
     static showError(element, message) {
@@ -55,91 +72,129 @@ class FormValidator {
 
 // Event listeners for forms
 document.addEventListener('DOMContentLoaded', () => {
-    const loginForm = document.getElementById('login-form');
-    const signupForm = document.getElementById('signup-form');
-
-    if (loginForm) {
-        loginForm.addEventListener('submit', handleLogin);
-    }
-
-    if (signupForm) {
-        signupForm.addEventListener('submit', handleSignup);
-    }
-});
-
-// Login form handler
-async function handleLogin(e) {
-    e.preventDefault();
-    FormValidator.clearErrors();
-
-    const email = e.target.querySelector('input[type="email"]').value;
-    const password = e.target.querySelector('input[type="password"]').value;
-    const role = e.target.querySelector('select[name="role"]').value;
-
-    const emailValidation = FormValidator.validateEmail(email);
-    if (!emailValidation.isValid) {
-        FormValidator.showError(e.target.querySelector('input[type="email"]'), emailValidation.message);
-        return;
-    }
-
-    try {
-        const response = await loginUser({ email, password, role });
-        if (response.success) {
-            window.location.href = '/dashboard.html';
-        }
-    } catch (error) {
-        showNotification(error.message, 'error');
-    }
-}
-
-// Signup form handler
-async function handleSignup(e) {
-    e.preventDefault();
-    FormValidator.clearErrors();
-
-    const formData = {
-        fullName: e.target.querySelector('input[type="text"]').value,
-        email: e.target.querySelector('input[type="email"]').value,
-        password: e.target.querySelector('input[type="password"]').value,
-        confirmPassword: e.target.querySelectorAll('input[type="password"]')[1].value,
-        role: e.target.querySelector('select[name="role"]').value
+    // Form switching
+    window.showForm = (formType) => {
+        document.querySelectorAll('.auth-form').forEach(form => form.classList.add('hidden'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        
+        document.getElementById(`${formType}-form`).classList.remove('hidden');
+        document.querySelector(`[onclick="showForm('${formType}')"]`).classList.add('active');
     };
 
-    // Validate all fields
-    if (!formData.fullName.trim()) {
-        FormValidator.showError(e.target.querySelector('input[type="text"]'), 'Full name is required');
-        return;
-    }
+    // Password visibility toggle
+    document.querySelectorAll('.toggle-password').forEach(toggle => {
+        toggle.addEventListener('click', (e) => {
+            const passwordInput = e.target.previousElementSibling;
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            e.target.classList.toggle('fa-eye');
+            e.target.classList.toggle('fa-eye-slash');
+        });
+    });
 
-    const emailValidation = FormValidator.validateEmail(formData.email);
-    if (!emailValidation.isValid) {
-        FormValidator.showError(e.target.querySelector('input[type="email"]'), emailValidation.message);
-        return;
-    }
+    // Password strength meter
+    const checkPasswordStrength = (password) => {
+        let strength = 0;
+        const meters = {
+            hasLower: /[a-z]/,
+            hasUpper: /[A-Z]/,
+            hasNumber: /\d/,
+            hasSpecial: /[^A-Za-z0-9]/,
+            isLong: /.{8,}/
+        };
 
-    const passwordValidation = FormValidator.validatePassword(formData.password);
-    if (!passwordValidation.isValid) {
-        FormValidator.showError(e.target.querySelector('input[type="password"]'), passwordValidation.message);
-        return;
-    }
+        Object.values(meters).forEach(regex => {
+            if (regex.test(password)) strength++;
+        });
 
-    if (formData.password !== formData.confirmPassword) {
-        FormValidator.showError(e.target.querySelectorAll('input[type="password"]')[1], 'Passwords do not match');
-        return;
-    }
+        const meter = document.querySelector('.password-strength-meter');
+        const colors = ['#e74c3c', '#f39c12', '#f1c40f', '#2ecc71', '#27ae60'];
+        meter.style.background = `linear-gradient(to right, ${colors[strength-1]} ${strength*20}%, #eee ${strength*20}%)`;
+    };
 
-    try {
-        const response = await registerUser(formData);
-        if (response.success) {
-            showNotification('Registration successful! Please verify your email.', 'success');
-            setTimeout(() => {
-                window.location.href = 'login.html';
-            }, 2000);
-        }
-    } catch (error) {
-        showNotification(error.message, 'error');
-    }
-}
+    document.querySelector('input[name="password"]').addEventListener('input', (e) => {
+        checkPasswordStrength(e.target.value);
+    });
+
+    // Form validation
+    const validateForm = (form) => {
+        let isValid = true;
+        form.querySelectorAll('input, select').forEach(input => {
+            if (input.hasAttribute('required') && !input.value) {
+                showError(input, 'This field is required');
+                isValid = false;
+            } else if (input.type === 'email' && input.value) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(input.value)) {
+                    showError(input, 'Please enter a valid email');
+                    isValid = false;
+                }
+            } else if (input.name === 'password' && input.value) {
+                const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+                if (!passwordRegex.test(input.value)) {
+                    showError(input, 'Password must contain at least 8 characters, including uppercase, lowercase, number and special character');
+                    isValid = false;
+                }
+            } else if (input.name === 'confirmPassword' && input.value) {
+                const password = form.querySelector('input[name="password"]').value;
+                if (input.value !== password) {
+                    showError(input, 'Passwords do not match');
+                    isValid = false;
+                }
+            }
+        });
+        return isValid;
+    };
+
+    const showError = (input, message) => {
+        const errorSpan = input.parentElement.querySelector('.error-message');
+        errorSpan.textContent = message;
+        input.style.borderColor = 'var(--error-color)';
+    };
+
+    // Form submission
+    document.querySelectorAll('.auth-form').forEach(form => {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!validateForm(form)) return;
+
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const spinner = submitBtn.querySelector('.fa-spinner');
+            submitBtn.disabled = true;
+            spinner.classList.remove('hidden');
+
+            try {
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+                
+                // Replace with your actual API endpoint
+                const response = await fetch('/api/auth/' + form.id.replace('-form', ''), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    window.location.href = '/dashboard';
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                const messageDiv = form.querySelector('.message');
+                messageDiv.textContent = error.message;
+                messageDiv.style.color = 'var(--error-color)';
+            } finally {
+                submitBtn.disabled = false;
+                spinner.classList.add('hidden');
+            }
+        });
+    });
+});
 
 // Password reset functionality
 async function sendResetLink() {
@@ -180,24 +235,30 @@ function showNotification(message, type) {
         notification.remove();
     }, 3000);
 }
-// Form switching functionality
 function showForm(formType) {
+    // Get form elements
     const loginForm = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
-    const tabs = document.querySelectorAll('.tab-btn');
-  
-    if (formType === 'login') {
-        loginForm.classList.remove('hidden');
-        signupForm.classList.add('hidden');
-        tabs[0].classList.add('active');
-        tabs[1].classList.remove('active');
-    } else {
+    const loginTab = document.querySelector('[onclick="showForm(\'login\')"]');
+    const signupTab = document.querySelector('[onclick="showForm(\'signup\')"]');
+
+    if (formType === 'signup') {
         loginForm.classList.add('hidden');
         signupForm.classList.remove('hidden');
-        tabs[0].classList.remove('active');
-        tabs[1].classList.add('active');
+        loginTab.classList.remove('active');
+        signupTab.classList.add('active');
+    } else {
+        signupForm.classList.add('hidden');
+        loginForm.classList.remove('hidden');
+        signupTab.classList.remove('active');
+        loginTab.classList.add('active');
     }
 }
+
+// Initialize the forms on page load
+document.addEventListener('DOMContentLoaded', () => {
+    showForm('login'); // Set default view to login
+});
 
 // Initialize IndexedDB with encryption and persistence
 let db;
@@ -410,4 +471,107 @@ showMessage('login-message', `${provider} login failed!`, 'error');
 document.addEventListener('DOMContentLoaded', () => {
 initializeGoogleAuth();
 initializeUniversityAuth();
+});
+
+const darkModeToggle = document.createElement('button');
+darkModeToggle.className = 'dark-mode-toggle';
+darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+document.querySelector('.auth-box').appendChild(darkModeToggle);
+
+darkModeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    const icon = darkModeToggle.querySelector('i');
+    icon.classList.toggle('fa-moon');
+    icon.classList.toggle('fa-sun');
+});
+        // Initialize particles.js
+        particlesJS('particles-js', {
+            particles: {
+                number: {
+                    value: 80,
+                    density: {
+                        enable: true,
+                        value_area: 800
+                    }
+                },
+                color: {
+                    value: '#ffffff'
+                },
+                shape: {
+                    type: 'circle'
+                },
+                opacity: {
+                    value: 0.5,
+                    random: false
+                },
+                size: {
+                    value: 3,
+                    random: true
+                },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: '#ffffff',
+                    opacity: 0.4,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 3,
+                    direction: 'none',
+                    random: false,
+                    straight: false,
+                    out_mode: 'out',
+                    bounce: false
+                }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: {
+                    onhover: {
+                        enable: true,
+                        mode: 'repulse'
+                    },
+                    onclick: {
+                        enable: true,
+                        mode: 'push'
+                    },
+                    resize: true
+                }
+            },
+            retina_detect: true
+        });
+// Add input focus effects
+document.querySelectorAll('.input-group input').forEach(input => {
+    input.addEventListener('focus', () => {
+        input.parentElement.classList.add('focused');
+    });
+    
+    input.addEventListener('blur', () => {
+        if (!input.value) {
+            input.parentElement.classList.remove('focused');
+        }
+    });
+});
+
+// Add loading state to buttons
+document.querySelectorAll('.primary-btn').forEach(button => {
+    button.addEventListener('click', () => {
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        button.disabled = true;
+        
+        setTimeout(() => {
+            button.innerHTML = 'Success <i class="fas fa-check"></i>';
+            button.style.background = 'var(--success-color)';
+        }, 1500);
+    });
+});
+
+// Enhance password strength indicator
+const passwordInput = document.querySelector('input[type="password"]');
+const strengthMeter = document.querySelector('.password-strength-meter');
+
+passwordInput.addEventListener('input', () => {
+    const strength = calculatePasswordStrength(passwordInput.value);
+    updateStrengthMeter(strength);
 });
