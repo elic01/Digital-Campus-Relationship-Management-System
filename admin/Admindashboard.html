@@ -9,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="Adminstyles.css">
 </head>
 <body class="bg-gray-100">
     <div id="particles-js"></div>
@@ -59,26 +59,77 @@
                     <canvas id="feedbackChart" class="mt-4"></canvas>
                 </div>
             </div>
+              <!-- Issue Tracking Board -->
+              <div class="dashboard-card p-6 mb-8">
+                  <h2 class="text-2xl font-bold mb-6">Issue Tracking</h2>
+                  <div class="flex justify-between mb-4">
+                      <button onclick="showNewIssueForm()" class="bg-blue-500 text-white px-4 py-2 rounded">
+                          <i class="fas fa-plus"></i> New Issue
+                      </button>
+                  </div>
 
-            <!-- Issue Tracking Board -->
+                  <div id="newIssueForm" class="hidden bg-white p-4 rounded shadow-lg mb-4">
+                      <form id="issueSubmitForm" class="space-y-4">
+                          <div>
+                              <label class="block mb-2">Issue Type</label>
+                              <select required class="w-full p-2 border rounded">
+                                  <option value="">Select type...</option>
+                                  <option>Technical Problem</option>
+                                  <option>Facility Maintenance</option>
+                                  <option>Academic Concern</option>
+                              </select>
+                          </div>
+                          <div>
+                              <label class="block mb-2">Priority</label>
+                              <select required class="w-full p-2 border rounded">
+                                  <option value="low">Low</option>
+                                  <option value="medium">Medium</option>
+                                  <option value="high">High</option>
+                                  <option value="urgent">Urgent</option>
+                              </select>
+                          </div>
+                          <div>
+                              <label class="block mb-2">Description</label>
+                              <textarea required class="w-full p-2 border rounded" rows="3"></textarea>
+                          </div>
+                          <div class="flex justify-end space-x-2">
+                              <button type="button" onclick="hideNewIssueForm()" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
+                              <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Submit Issue</button>
+                          </div>
+                      </form>
+                  </div>
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div class="kanban-column p-4">
+                          <h3 class="font-bold mb-4">Open</h3>
+                          <div class="task-card">Network connectivity issues in N101</div>
+                          <div class="task-card">Update student portal UI</div>
+                      </div>
+                      <div class="kanban-column p-4">
+                          <h3 class="font-bold mb-4">In Progress</h3>
+                          <div class="task-card">Implement new feedback system</div>
+                      </div>
+                      <div class="kanban-column p-4">
+                          <h3 class="font-bold mb-4">Completed</h3>
+                          <div class="task-card">Server maintenance</div>
+                      </div>
+                  </div>
+              </div>
+            <!-- AI-Powered Task Management -->
             <div class="dashboard-card p-6 mb-8">
-                <h2 class="text-2xl font-bold mb-6">Issue Tracking</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="kanban-column p-4">
-                        <h3 class="font-bold mb-4">Open</h3>
-                        <div class="task-card">Network connectivity issues in N101</div>
-                        <div class="task-card">Update student portal UI</div>
-                    </div>
-                    <div class="kanban-column p-4">
-                        <h3 class="font-bold mb-4">In Progress</h3>
-                        <div class="task-card">Implement new feedback system</div>
-                    </div>
-                    <div class="kanban-column p-4">
-                        <h3 class="font-bold mb-4">Completed</h3>
-                        <div class="task-card">Server maintenance</div>
-                    </div>
+                <h2 class="text-2xl font-bold mb-6">Task Management</h2>
+                <div class="flex justify-between mb-4">
+                    <button id="addTaskBtn" class="bg-blue-500 text-white px-4 py-2 rounded">
+                        <i class="fas fa-plus"></i> Add Task
+                    </button>
+                    <button id="organizeAIBtn" class="bg-purple-500 text-white px-4 py-2 rounded">
+                        <i class="fas fa-magic"></i> AI Organize
+                    </button>
+                </div>
+                <div class="tasks-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Tasks will be dynamically added here -->
                 </div>
             </div>
+
 
             <!-- User Management -->
             <div class="dashboard-card p-6">
@@ -109,6 +160,9 @@
             </div>
         </div>
     </div>
-    <script src="dashboard.js"></script>
+    <div class="dashboard-card" data-tilt data-tilt-glare data-tilt-max-glare="0.8">
+        <!-- Card content -->
+    </div>
+    <script src="Admindashboard.js"></script>
 </body>
 </html>
