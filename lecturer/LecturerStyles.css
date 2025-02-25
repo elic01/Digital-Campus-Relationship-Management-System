@@ -22,6 +22,14 @@ body.dark-mode {
     color: var(--text-dark);
 }
 
+/* Enhanced dark mode styles */
+.dark-mode {
+    --bg-primary: #1a1a1a;
+    --text-primary: #ffffff;
+    --card-bg: #2d2d2d;
+    --hover-bg: #3d3d3d;
+}
+
 .profile-dropdown {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
@@ -45,12 +53,7 @@ body.dark-mode {
 }
 
 .content-card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-    transition: all 0.3s ease;
+    @apply bg-white dark:bg-gray-800 rounded-lg shadow-lg transition-colors;
 }
 
 .dark-mode .content-card {
@@ -178,18 +181,8 @@ body.dark-mode {
 }
 
 .notification-badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background: var(--danger);
-    color: white;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    font-size: 0.8rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    @apply absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5
+    flex items-center justify-center transform scale-90 hover:scale-100 transition-transform;
 }
 
 #profileModal .content-card {
@@ -366,19 +359,36 @@ body.dark-mode {
 }
 
 .feedback-card {
-    transition: transform 0.3s ease;
-}
-
-.feedback-card:hover {
-    transform: translateY(-5px);
+    @apply hover:shadow-md transition-shadow;
 }
 
 .course-material-card {
-    border-left: 4px solid var(--primary);
+    @apply hover:shadow-md transition-all;
 }
 
-.announcement-card {
-    border-left: 4px solid var(--warning);
+.course-material-card:hover {
+    transform: translateY(-2px);
+}
+
+/* Dark mode specific styles */
+.dark-mode .content-card,
+.dark-mode .feedback-card,
+.dark-mode .course-material-card {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+}
+
+.dark-mode .hover\:bg-indigo-50:hover {
+    background-color: var(--hover-bg);
+}
+
+/* Animation for feedback responses */
+.feedback-card textarea {
+    transition: all 0.3s ease;
+}
+
+.feedback-card button {
+    transition: all 0.2s ease;
 }
 
 .chart-container {
