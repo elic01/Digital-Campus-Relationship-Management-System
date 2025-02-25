@@ -260,21 +260,12 @@ document.addEventListener('DOMContentLoaded', () => {
     showForm('login'); // Set default view to login
 });
 
-// Initialize IndexedDB with encryption and persistence
-let db;
+// Initialize IndexedDB
 const dbName = "DCRMS_DB";
-const dbVersion = 2; // Increment version for schema updates
+const dbVersion = 1;
 const request = indexedDB.open(dbName, dbVersion);
 
-// Hash function using SHA-256
-async function hashPassword(password) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(password);
-    const hash = await crypto.subtle.digest('SHA-256', data);
-    return Array.from(new Uint8Array(hash))
-        .map(b => b.toString(16).padStart(2, '0'))
-        .join('');
-}
+let db;
 
 request.onerror = (event) => {
     console.log("Database error:", event.target.error);
@@ -285,106 +276,92 @@ request.onupgradeneeded = (event) => {
     if (!db.objectStoreNames.contains('users')) {
         const userStore = db.createObjectStore('users', { keyPath: 'email' });
         userStore.createIndex('role', 'role', { unique: false });
-        userStore.createIndex('lastLogin', 'lastLogin', { unique: false });
     }
 };
 
 request.onsuccess = (event) => {
     db = event.target.result;
-    // Enable persistence
-    db.onversionchange = () => {
-        db.close();
-        alert("Database is outdated, please reload the page.");
-    };
+    initializeTestData(); // Initialize test users
 };
 
-// Enhanced signup handler with hashing
-document.getElementById('signup-form').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const userData = Object.fromEntries(formData);
-    
-    if (userData.password !== userData.confirmPassword) {
-        showMessage('signup-message', "Passwords don't match!", 'error');
-        return;
-    }
+// Hash function
+async function hashPassword(password) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hash = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(hash))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+}
 
-    try {
-        const hashedPassword = await hashPassword(userData.password);
-        const transaction = db.transaction(['users'], 'readwrite');
-        const userStore = transaction.objectStore('users');
-
-        const user = {
-            email: userData.email,
-            fullName: userData.fullName,
-            password: hashedPassword,
-            role: userData.role,
-            createdAt: new Date().toISOString(),
-            lastLogin: null
-        };
-
-        const addRequest = userStore.add(user);
-
-        addRequest.onsuccess = () => {
-            showMessage('signup-message', 'Account created successfully!', 'success');
-            this.reset();
-            setTimeout(() => showForm('login'), 1500);
-        };
-
-        addRequest.onerror = () => {
-            showMessage('signup-message', 'Email already exists!', 'error');
-        };
-    } catch (error) {
-        showMessage('signup-message', 'Registration failed!', 'error');
-    }
-});
-
-// Enhanced login handler with hash verification
+// Login handler
 document.getElementById('login-form').addEventListener('submit', async function(e) {
     e.preventDefault();
-    const formData = new FormData(this);
-    const loginData = Object.fromEntries(formData);
+    const email = this.querySelector('input[name="email"]').value;
+    const password = this.querySelector('input[name="password"]').value;
+    const role = this.querySelector('select[name="role"]').value;
 
     try {
-        const hashedPassword = await hashPassword(loginData.password);
-        const transaction = db.transaction(['users'], 'readwrite');
+        const hashedPassword = await hashPassword(password);
+        const transaction = db.transaction(['users'], 'readonly');
         const userStore = transaction.objectStore('users');
-        const request = userStore.get(loginData.email);
+        const user = await userStore.get(email);
 
-        request.onsuccess = () => {
-            const user = request.result;
-            if (user && user.password === hashedPassword && user.role === loginData.role) {
-                // Update last login
-                user.lastLogin = new Date().toISOString();
-                userStore.put(user);
+        if (user && user.password === hashedPassword && user.role === role) {
+            // Store session
+            sessionStorage.setItem('currentUser', JSON.stringify({
+                email: user.email,
+                fullName: user.fullName,
+                role: user.role
+            }));
 
-                showMessage('login-message', 'Login successful!', 'success');
-                sessionStorage.setItem('currentUser', JSON.stringify({
-                    email: user.email,
-                    fullName: user.fullName,
-                    role: user.role,
-                    lastLogin: user.lastLogin
-                }));
-
-                const dashboardRoutes = {
-                    'student': '../dashboard/student-dashboard.html',
-                    'lecturer': '../dashboard/lecturer-dashboard.html',
-                    'admin': '../dashboard/admin-dashboard.html'
-                };
-
-                setTimeout(() => {
-                    window.location.href = dashboardRoutes[user.role];
-                }, 1000);
-            } else {
-                showMessage('login-message', 'Invalid credentials!', 'error');
-            }
-        };
+            // Redirect based on role
+            const dashboards = {
+                'student': '../student/Studentdashboard.html',
+                'lecturer': '../lecturer/LecturerDashboard.html',
+                'admin': '../admin/Admindashboard.html'
+            };
+            
+            window.location.href = dashboards[role];
+        } else {
+            showMessage('login-message', 'Invalid credentials!', 'error');
+        }
     } catch (error) {
         showMessage('login-message', 'Login failed!', 'error');
     }
 });
 
-// Helper function for messages
+// Initialize test data
+async function initializeTestData() {
+    const testUsers = [
+        {
+            email: 'h230393f@hit.ac.zw',
+            fullName: 'Emmanuel L I Chinjekure',
+            password: await hashPassword('userpass123'),
+            role: 'student'
+        },
+        {
+            email: 'isheanesu2004@gmail.com',
+            fullName: 'Mr Sumbureru', 
+            password: await hashPassword('qwerty123'),
+            role: 'lecturer'
+        },
+        {
+            email: 'admin@hit.ac.zw',
+            fullName: 'admin',
+            password: await hashPassword('Admin123'),
+            role: 'admin'
+        }
+    ];
+
+    const transaction = db.transaction(['users'], 'readwrite');
+    const userStore = transaction.objectStore('users');
+
+    for (const user of testUsers) {
+        userStore.put(user);
+    }
+}
+
 function showMessage(elementId, message, type) {
     const messageElement = document.getElementById(elementId);
     messageElement.textContent = message;
@@ -455,9 +432,9 @@ if (userData.success) {
 
   // Redirect to appropriate dashboard
   const dashboardRoutes = {
-      'student': '../dashboard/student-dashboard.html',
-      'lecturer': '../dashboard/lecturer-dashboard.html',
-      'admin': '../dashboard/admin-dashboard.html'
+      'student': '../student/Studentdashboard.html',
+      'lecturer': '../lecturer/LecturerDashboard.html.html',
+      'admin': '../admin/Admindashboard.html'
   };
 
   window.location.href = dashboardRoutes[userData.role];
