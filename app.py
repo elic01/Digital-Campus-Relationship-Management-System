@@ -22,7 +22,7 @@ def reset():
 def student():
     return render_template('student.html')
 
-@app.route('lecturer')
+@app.route('/lecturer')
 def lecturer():
     return render_template('lecturer.html')    
 
